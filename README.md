@@ -1,58 +1,73 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# IT Company Practice API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Учебный **REST API** на **Laravel** для практики по дисциплине вроде УП-09: одно приложение, тематика **IT-компания**, пять независимых **вариантов (доменов)** с отдельными префиксами URL и общей моделью данных. Проект показывает типичные приёмы: ресурсы CRUD, пагинация, фильтрация, поиск, сортировка, роли доступа и отдельные **аналитические** эндпоинты.
 
-## About Laravel
+## Для чего проект
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Закрепить работу с **HTTP API**, **Eloquent**, миграциями и сидерами.
+- Отработать **аутентификацию** (Laravel Sanctum, Bearer-токен) и **авторизацию по ролям**.
+- Иметь **единую кодовую базу** с пятью «срезами» бизнес-логики (как у разных заказчиков или модулей одной системы).
+- Зафиксировать контракт API в **OpenAPI**: описание маршрутов, параметров и ответов в репозитории; при необходимости — ручная проверка через **Swagger UI**, который отдаёт это же приложение (удобно при разработке и сдаче).
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**Роли в задании:** здесь вы делаете **бэкенд (сервер)**. Другие участники или отдельная работа — это **клиент** к вашему API: свой фронт, мобильное приложение или Postman, обращение по `http(s)://.../api/v1/...` с JSON и токеном. Им **не нужно «подключать Swagger»** к своему коду: они пишут HTTP-клиент к вашему серверу. Файл/страница OpenAPI может им служить только **документацией контракта** (или они смотрят ваш README и примеры запросов).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Что внутри
 
-## Learning Laravel
+| Вариант | Префикс | Содержание |
+|--------|---------|------------|
+| **Projects** | `/api/v1/projects` | Проекты, этапы (milestones), задачи (tasks) |
+| **Org** | `/api/v1/org/...` | Отделы, сотрудники, команды (связь сотрудник ↔ команда) |
+| **Assets** | `/api/v1/assets/...` | Оборудование (hardware), лицензии ПО и выдача мест сотрудникам |
+| **Tickets** | `/api/v1/tickets/...` | Категории заявок, заявки (`records`), комментарии |
+| **Hiring** | `/api/v1/hiring/...` | Вакансии, кандидаты, отклики, интервью |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+У каждого варианта есть **GET `.../analytics/...`**: сводки и агрегаты (по статусам, воронка откликов, утилизация лицензий и т.д.).
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Аутентификация и роли
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+- Вход: `POST /api/v1/auth/login` (email, password) → токен Sanctum.
+- Защищённые маршруты: заголовок `Authorization: Bearer <token>`.
+- Роли пользователя в БД: `admin`, `projects`, `org`, `assets`, `tickets`, `hiring`. Роль **`admin`** видит все разделы; остальные — только свой вариант.
+- Демо-аккаунты задаются в `UserSeeder` (пароль по умолчанию совпадает с подсказкой в ответе `GET /api/v1`).
 
-## Agentic Development
+### Списки (общие query-параметры)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Для индексных эндпоинтов обычно доступны:
+
+- **`q`** — текстовый поиск по полям ресурса;
+- **`sort`**, **`direction`** (`asc` / `desc`) — сортировка;
+- **`page`**, **`per_page`** — пагинация;
+- дополнительные фильтры (например `status`, `department_id`) — в описании Swagger или в коде контроллера.
+
+### Документация API (на стороне сервера)
+
+- **Swagger UI** и JSON спецификации генерируются **в этом проекте** (обычно UI: `/api/documentation`, JSON: `/api/docs`; см. `config/l5-swagger.php`). Это инструмент для вас и для проверяющих: открыть в браузере, авторизоваться токеном и вызвать метод.
+- Исходные описания — атрибуты OpenAPI в `app/OpenApi/`.
+
+## Быстрый старт
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Проверка: откройте `GET http://127.0.0.1:8000/api/v1` — JSON с подсказками по входу и ссылками на разделы.
 
-## Contributing
+Тесты:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan test
+```
 
-## Code of Conduct
+## Технологии
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- PHP, **Laravel**
+- **Laravel Sanctum** (API-токены)
+- **darkaonline/l5-swagger** + атрибуты OpenAPI 3 (документация и Swagger UI в составе серверного приложения)
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Репозиторий предназначен для **учебной сдачи и демонстрации**; продакшен-настройки (HTTPS, rate limit, отдельные политики) в объём практики не входят, но код можно развивать дальше.
