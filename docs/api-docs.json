@@ -1,0 +1,4360 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "IT Company Practice API",
+        "description": "Учебный REST API (Laravel) + Sanctum Bearer. Сначала POST /v1/auth/login, затем заголовок Authorization: Bearer {token}. Роли: admin (всё), projects, org, assets, tickets, hiring — только свой раздел. Списки: фильтры по полям раздела, `q` — поиск по текстовым полям, `sort` + `direction` (asc|desc), `page` и `per_page`. В каждом разделе есть GET `.../analytics/...` — сводки и отчёты. Публично: GET /v1 и POST /v1/auth/login. Swagger UI: /api/documentation.",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "/api",
+            "description": "Префикс группы `api` в Laravel. При деплое задайте `APP_URL`; при «Try it out» в Swagger UI запросы идут на тот же хост."
+        }
+    ],
+    "paths": {
+        "/v1/projects/analytics/overview": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Аналитика: сводка по проектам и задачам",
+                "operationId": "projectsAnalyticsOverview",
+                "responses": {
+                    "200": {
+                        "description": "Агрегаты",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/analytics/tasks-by-priority": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Аналитика: задачи по приоритету",
+                "operationId": "projectsAnalyticsTasksByPriority",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/analytics/task-workload": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Аналитика: нагрузка по исполнителям",
+                "operationId": "projectsAnalyticsTaskWorkload",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/analytics/employees-by-department": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Аналитика: численность по отделам",
+                "operationId": "orgAnalyticsEmployeesByDepartment",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/analytics/team-sizes": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Аналитика: размеры команд",
+                "operationId": "orgAnalyticsTeamSizes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/analytics/job-title-distribution": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Аналитика: распределение по должностям",
+                "operationId": "orgAnalyticsJobTitles",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/analytics/hardware-by-status": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Аналитика: оборудование по статусам",
+                "operationId": "assetsAnalyticsHardwareByStatus",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/analytics/license-utilization": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Аналитика: утилизация лицензий",
+                "operationId": "assetsAnalyticsLicenseUtilization",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/analytics/hardware-by-type": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Аналитика: оборудование по типам",
+                "operationId": "assetsAnalyticsHardwareByType",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/analytics/records-by-status": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Аналитика: заявки по статусам",
+                "operationId": "ticketsAnalyticsByStatus",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/analytics/records-by-category": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Аналитика: заявки по категориям",
+                "operationId": "ticketsAnalyticsByCategory",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/analytics/records-by-priority": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Аналитика: заявки по приоритету",
+                "operationId": "ticketsAnalyticsByPriority",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/analytics/applications-by-stage": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Аналитика: отклики по этапам",
+                "operationId": "hiringAnalyticsApplicationsByStage",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/analytics/vacancy-applications": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Аналитика: отклики по вакансиям",
+                "operationId": "hiringAnalyticsVacancyApplications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/analytics/upcoming-interviews": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Аналитика: предстоящие интервью",
+                "operationId": "hiringAnalyticsUpcomingInterviews",
+                "parameters": [
+                    {
+                        "name": "days",
+                        "in": "query",
+                        "description": "Горизонт в днях (1–365), по умолчанию 30",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/hardware-assets": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Список единиц оборудования",
+                "operationId": "assetsHardwareIndex",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "employee_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Создать запись оборудования",
+                "operationId": "assetsHardwareStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HardwareAssetWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/hardware-assets/{hardware_asset}": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Оборудование",
+                "operationId": "assetsHardwareShow",
+                "parameters": [
+                    {
+                        "name": "hardware_asset",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Обновить оборудование",
+                "operationId": "assetsHardwareUpdate",
+                "parameters": [
+                    {
+                        "name": "hardware_asset",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HardwareAssetWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Удалить запись",
+                "operationId": "assetsHardwareDestroy",
+                "parameters": [
+                    {
+                        "name": "hardware_asset",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/assets/software-licenses": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Список лицензий (withCount used_seats)",
+                "operationId": "assetsLicensesIndex",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Создать лицензию",
+                "operationId": "assetsLicensesStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SoftwareLicenseWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/software-licenses/{software_license}": {
+            "get": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Лицензия и назначенные сотрудники",
+                "operationId": "assetsLicensesShow",
+                "parameters": [
+                    {
+                        "name": "software_license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Обновить лицензию",
+                "operationId": "assetsLicensesUpdate",
+                "parameters": [
+                    {
+                        "name": "software_license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SoftwareLicenseWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Удалить лицензию",
+                "operationId": "assetsLicensesDestroy",
+                "parameters": [
+                    {
+                        "name": "software_license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/assets/software-licenses/{software_license}/employees": {
+            "post": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Выдать место лицензии сотруднику",
+                "operationId": "assetsLicensesAttachEmployee",
+                "parameters": [
+                    {
+                        "name": "software_license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LicenseAttachRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Нет свободных мест",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/assets/software-licenses/{software_license}/employees/{employee}": {
+            "delete": {
+                "tags": [
+                    "Assets"
+                ],
+                "summary": "Отозвать лицензию у сотрудника",
+                "operationId": "assetsLicensesDetachEmployee",
+                "parameters": [
+                    {
+                        "name": "software_license",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "employee",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Вход: выдаёт Bearer-токен Sanctum",
+                "operationId": "authLogin",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AuthLoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Токен и профиль",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthLoginResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Неверные данные",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/v1/auth/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Выход (отзыв текущего токена)",
+                "operationId": "authLogout",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/auth/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Текущий пользователь и роль",
+                "operationId": "authMe",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/vacancies": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Вакансии",
+                "operationId": "hiringVacanciesIndex",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "department_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Создать вакансию",
+                "operationId": "hiringVacanciesStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VacancyWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/vacancies/{vacancy}": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Вакансия с откликами",
+                "operationId": "hiringVacanciesShow",
+                "parameters": [
+                    {
+                        "name": "vacancy",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Обновить вакансию",
+                "operationId": "hiringVacanciesUpdate",
+                "parameters": [
+                    {
+                        "name": "vacancy",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/VacancyWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Удалить вакансию",
+                "operationId": "hiringVacanciesDestroy",
+                "parameters": [
+                    {
+                        "name": "vacancy",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/hiring/vacancies/{vacancy}/applications": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Отклики на вакансию",
+                "operationId": "hiringVacanciesApplicationsIndex",
+                "parameters": [
+                    {
+                        "name": "vacancy",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "stage",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Кандидат: имя, email",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/candidates": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Кандидаты",
+                "operationId": "hiringCandidatesIndex",
+                "parameters": [
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Создать кандидата",
+                "operationId": "hiringCandidatesStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CandidateWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/candidates/{candidate}": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Кандидат с откликами",
+                "operationId": "hiringCandidatesShow",
+                "parameters": [
+                    {
+                        "name": "candidate",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Обновить кандидата",
+                "operationId": "hiringCandidatesUpdate",
+                "parameters": [
+                    {
+                        "name": "candidate",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CandidateWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Удалить кандидата",
+                "operationId": "hiringCandidatesDestroy",
+                "parameters": [
+                    {
+                        "name": "candidate",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/hiring/job-applications": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Все отклики",
+                "operationId": "hiringApplicationsIndex",
+                "parameters": [
+                    {
+                        "name": "vacancy_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "candidate_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "stage",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Кандидат или название вакансии",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Создать отклик (vacancy_id + candidate_id)",
+                "operationId": "hiringApplicationsStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JobApplicationWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Дубликат или валидация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/job-applications/{job_application}": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Отклик с интервью",
+                "operationId": "hiringApplicationsShow",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Обновить этап отклика",
+                "operationId": "hiringApplicationsUpdate",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/JobApplicationPatch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Удалить отклик",
+                "operationId": "hiringApplicationsDestroy",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/hiring/job-applications/{job_application}/interviews": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Интервью по отклику",
+                "operationId": "hiringInterviewsIndex",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Запланировать интервью",
+                "operationId": "hiringInterviewsStore",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InterviewWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/hiring/job-applications/{job_application}/interviews/{interview}": {
+            "get": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Интервью",
+                "operationId": "hiringInterviewsShow",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "interview",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Обновить интервью",
+                "operationId": "hiringInterviewsUpdate",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "interview",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/InterviewPatch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Hiring"
+                ],
+                "summary": "Удалить интервью",
+                "operationId": "hiringInterviewsDestroy",
+                "parameters": [
+                    {
+                        "name": "job_application",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "interview",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1": {
+            "get": {
+                "tags": [
+                    "Meta"
+                ],
+                "summary": "Карта API и ссылки на разделы (без токена)",
+                "operationId": "metaIndex",
+                "responses": {
+                    "200": {
+                        "description": "JSON со списком вариантов",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/v1/projects": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Список проектов",
+                "operationId": "projectsIndex",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Поиск по name, code, description",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Создать проект",
+                "operationId": "projectsStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProjectWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Проект с этапами и задачами",
+                "operationId": "projectsShow",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Не найдено"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Обновить проект (допускается также PATCH)",
+                "operationId": "projectsUpdate",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProjectWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Удалить проект",
+                "operationId": "projectsDestroy",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}/milestones": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Этапы проекта",
+                "operationId": "milestonesIndex",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Поиск по названию этапа",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Создать этап",
+                "operationId": "milestonesStore",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MilestoneWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}/milestones/{milestone}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Этап с задачами",
+                "operationId": "milestonesShow",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "milestone",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Обновить этап",
+                "operationId": "milestonesUpdate",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "milestone",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MilestoneWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Удалить этап",
+                "operationId": "milestonesDestroy",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "milestone",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}/tasks": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Задачи проекта",
+                "operationId": "tasksIndex",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "milestone_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "priority",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "employee_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "description": "Поиск по title, description",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Создать задачу",
+                "operationId": "tasksStore",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TaskWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/projects/{project}/tasks/{task}": {
+            "get": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Задача",
+                "operationId": "tasksShow",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "task",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Обновить задачу",
+                "operationId": "tasksUpdate",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "task",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TaskWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Projects"
+                ],
+                "summary": "Удалить задачу",
+                "operationId": "tasksDestroy",
+                "parameters": [
+                    {
+                        "name": "project",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "task",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/org/departments": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Список отделов",
+                "operationId": "orgDepartmentsIndex",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Создать отдел",
+                "operationId": "orgDepartmentsStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DepartmentWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/departments/{department}": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Отдел с сотрудниками",
+                "operationId": "orgDepartmentsShow",
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Обновить отдел",
+                "operationId": "orgDepartmentsUpdate",
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DepartmentWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Удалить отдел",
+                "operationId": "orgDepartmentsDestroy",
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/org/employees": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Список сотрудников",
+                "operationId": "orgEmployeesIndex",
+                "parameters": [
+                    {
+                        "name": "department_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "job_title",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Создать сотрудника",
+                "operationId": "orgEmployeesStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmployeeWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Ошибка валидации",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/employees/{employee}": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Сотрудник",
+                "operationId": "orgEmployeesShow",
+                "parameters": [
+                    {
+                        "name": "employee",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Обновить сотрудника",
+                "operationId": "orgEmployeesUpdate",
+                "parameters": [
+                    {
+                        "name": "employee",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EmployeeWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Удалить сотрудника",
+                "operationId": "orgEmployeesDestroy",
+                "parameters": [
+                    {
+                        "name": "employee",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/org/teams": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Список команд",
+                "operationId": "orgTeamsIndex",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Создать команду",
+                "operationId": "orgTeamsStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TeamWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/teams/{team}": {
+            "get": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Команда с участниками",
+                "operationId": "orgTeamsShow",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Обновить команду",
+                "operationId": "orgTeamsUpdate",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TeamWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Удалить команду",
+                "operationId": "orgTeamsDestroy",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/org/teams/{team}/employees": {
+            "post": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Добавить сотрудника в команду",
+                "operationId": "orgTeamsAttachEmployee",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TeamAttachRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Команда с составом",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/org/teams/{team}/employees/{employee}": {
+            "delete": {
+                "tags": [
+                    "Org"
+                ],
+                "summary": "Убрать сотрудника из команды",
+                "operationId": "orgTeamsDetachEmployee",
+                "parameters": [
+                    {
+                        "name": "team",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "employee",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Команда с составом",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/ticket-categories": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Категории заявок",
+                "operationId": "ticketsCategoriesIndex",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Создать категорию",
+                "operationId": "ticketsCategoriesStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketCategoryWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/ticket-categories/{ticket_category}": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Категория",
+                "operationId": "ticketsCategoriesShow",
+                "parameters": [
+                    {
+                        "name": "ticket_category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Обновить категорию",
+                "operationId": "ticketsCategoriesUpdate",
+                "parameters": [
+                    {
+                        "name": "ticket_category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketCategoryWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Удалить категорию",
+                "operationId": "ticketsCategoriesDestroy",
+                "parameters": [
+                    {
+                        "name": "ticket_category",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/tickets/records": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Заявки (ресурс records)",
+                "operationId": "ticketsRecordsIndex",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "ticket_category_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "priority",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "assignee_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "reporter_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Создать заявку",
+                "operationId": "ticketsRecordsStore",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketRecordWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/records/{record}": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Заявка с комментариями",
+                "operationId": "ticketsRecordsShow",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Обновить заявку",
+                "operationId": "ticketsRecordsUpdate",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketRecordWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Удалить заявку",
+                "operationId": "ticketsRecordsDestroy",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        },
+        "/v1/tickets/records/{record}/ticket-comments": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Комментарии к заявке",
+                "operationId": "ticketsCommentsIndex",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "q",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "direction",
+                        "in": "query",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Пагинация",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Добавить комментарий",
+                "operationId": "ticketsCommentsStore",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketCommentWrite"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Создано",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/tickets/records/{record}/ticket-comments/{ticket_comment}": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Комментарий",
+                "operationId": "ticketsCommentsShow",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "ticket_comment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Обновить комментарий",
+                "operationId": "ticketsCommentsUpdate",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "ticket_comment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TicketCommentPatch"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/JsonObject"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Удалить комментарий",
+                "operationId": "ticketsCommentsDestroy",
+                "parameters": [
+                    {
+                        "name": "record",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "ticket_comment",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Без тела"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "JsonObject": {
+                "description": "Произвольный JSON (модель Eloquent, пагинация Laravel, ошибки валидации).",
+                "type": "object",
+                "additionalProperties": true
+            },
+            "AuthLoginRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "projects@company.test"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "password"
+                    }
+                },
+                "type": "object"
+            },
+            "AuthLoginResponse": {
+                "required": [
+                    "token",
+                    "token_type",
+                    "user"
+                ],
+                "properties": {
+                    "token": {
+                        "type": "string"
+                    },
+                    "token_type": {
+                        "type": "string",
+                        "example": "Bearer"
+                    },
+                    "user": {
+                        "properties": {
+                            "id": {
+                                "type": "integer"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "email": {
+                                "type": "string"
+                            },
+                            "role": {
+                                "type": "string",
+                                "enum": [
+                                    "admin",
+                                    "projects",
+                                    "org",
+                                    "assets",
+                                    "tickets",
+                                    "hiring"
+                                ]
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "ProjectWrite": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Портал сотрудника"
+                    },
+                    "code": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "active",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "started_at": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "ended_at": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "MilestoneWrite": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    },
+                    "sort_order": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TaskWrite": {
+                "required": [
+                    "title"
+                ],
+                "properties": {
+                    "milestone_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "employee_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "priority": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "due_date": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "DepartmentWrite": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "EmployeeWrite": {
+                "required": [
+                    "first_name",
+                    "last_name",
+                    "email"
+                ],
+                "properties": {
+                    "department_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "first_name": {
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "job_title": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "hired_at": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TeamWrite": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TeamAttachRequest": {
+                "required": [
+                    "employee_id"
+                ],
+                "properties": {
+                    "employee_id": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "HardwareAssetWrite": {
+                "required": [
+                    "name",
+                    "inventory_number"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "inventory_number": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string",
+                        "nullable": true,
+                        "enum": [
+                            "in_stock",
+                            "assigned",
+                            "retired"
+                        ]
+                    },
+                    "employee_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "SoftwareLicenseWrite": {
+                "required": [
+                    "name",
+                    "total_seats"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "total_seats": {
+                        "type": "integer"
+                    },
+                    "expires_at": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "LicenseAttachRequest": {
+                "required": [
+                    "employee_id"
+                ],
+                "properties": {
+                    "employee_id": {
+                        "type": "integer"
+                    }
+                },
+                "type": "object"
+            },
+            "TicketCategoryWrite": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string"
+                    },
+                    "slug": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TicketRecordWrite": {
+                "required": [
+                    "ticket_category_id",
+                    "reporter_id",
+                    "subject"
+                ],
+                "properties": {
+                    "ticket_category_id": {
+                        "type": "integer"
+                    },
+                    "reporter_id": {
+                        "type": "integer"
+                    },
+                    "assignee_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "subject": {
+                        "type": "string"
+                    },
+                    "body": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "priority": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "TicketCommentWrite": {
+                "required": [
+                    "employee_id",
+                    "body"
+                ],
+                "properties": {
+                    "employee_id": {
+                        "type": "integer"
+                    },
+                    "body": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "TicketCommentPatch": {
+                "properties": {
+                    "body": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
+            "VacancyWrite": {
+                "required": [
+                    "title"
+                ],
+                "properties": {
+                    "title": {
+                        "type": "string"
+                    },
+                    "department_id": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "description": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "status": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "opened_at": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "CandidateWrite": {
+                "required": [
+                    "full_name",
+                    "email"
+                ],
+                "properties": {
+                    "full_name": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "JobApplicationWrite": {
+                "required": [
+                    "vacancy_id",
+                    "candidate_id"
+                ],
+                "properties": {
+                    "vacancy_id": {
+                        "type": "integer"
+                    },
+                    "candidate_id": {
+                        "type": "integer"
+                    },
+                    "stage": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "applied_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "JobApplicationPatch": {
+                "properties": {
+                    "stage": {
+                        "type": "string"
+                    },
+                    "applied_at": {
+                        "type": "string",
+                        "format": "date",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "InterviewWrite": {
+                "required": [
+                    "scheduled_at"
+                ],
+                "properties": {
+                    "scheduled_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "interviewer_id": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "InterviewPatch": {
+                "properties": {
+                    "scheduled_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "notes": {
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "interviewer_id": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Токен из POST /v1/auth/login (поле token). Заголовок: Authorization: Bearer <token>",
+                "bearerFormat": "Sanctum",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "security": [
+        {
+            "bearerAuth": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Sanctum: вход, выход, профиль"
+        },
+        {
+            "name": "Meta",
+            "description": "Сводка и ссылки на разделы"
+        },
+        {
+            "name": "Projects",
+            "description": "Вариант 1: проекты, этапы (milestones), задачи (tasks)"
+        },
+        {
+            "name": "Org",
+            "description": "Вариант 2: отделы, сотрудники, команды"
+        },
+        {
+            "name": "Assets",
+            "description": "Вариант 3: железо (hardware-assets), лицензии ПО"
+        },
+        {
+            "name": "Tickets",
+            "description": "Вариант 4: категории заявок, заявки (`records`), комментарии"
+        },
+        {
+            "name": "Hiring",
+            "description": "Вариант 5: вакансии, кандидаты, отклики (job-applications), интервью"
+        }
+    ]
+}
