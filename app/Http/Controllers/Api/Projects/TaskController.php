@@ -15,7 +15,8 @@ class TaskController extends Controller
 
     public function index(Request $request, Project $project): JsonResponse
     {
-        $query = $project->tasks()->with('employee');
+        $query = $project->tasks()->getQuery();
+        $query->with('employee');
 
         if ($request->filled('milestone_id')) {
             $query->where('milestone_id', $request->integer('milestone_id'));

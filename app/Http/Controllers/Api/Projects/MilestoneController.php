@@ -15,7 +15,7 @@ class MilestoneController extends Controller
 
     public function index(Request $request, Project $project): JsonResponse
     {
-        $query = $project->milestones();
+        $query = $project->milestones()->getQuery();;
         $this->applyTextSearch($query, $request, ['name']);
         $this->applySort($query, $request, ['id', 'name', 'due_date', 'sort_order', 'created_at'], 'sort_order', 'asc');
 
